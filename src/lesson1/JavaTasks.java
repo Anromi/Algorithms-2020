@@ -1,6 +1,13 @@
 package lesson1;
 
 import kotlin.NotImplementedError;
+import kotlin.text.Regex;
+
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 @SuppressWarnings("unused")
 public class JavaTasks {
@@ -34,8 +41,67 @@ public class JavaTasks {
      *
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-    static public void sortTimes(String inputName, String outputName) {
-        throw new NotImplementedError();
+    static public void sortTimes(String inputName, String outputName) throws IOException {
+        ArrayList<String[]> listLine = new ArrayList<>(); // список из списков времени и (am/pm)
+        ArrayList<ArrayList<String>> listPair = new ArrayList<>(); // время и секунды
+
+        FileReader reader = new FileReader(inputName); // читаем файл
+        Scanner scanner = new Scanner(reader);
+
+        while (scanner.hasNextLine()) {
+            ArrayList<String> list = new ArrayList<>();
+            String lineString = scanner.nextLine();
+            if (!lineString.matches(String.valueOf(new Regex("[0-2][0-9]:[0-5][0-9]:[0-5][0-9] (PM|AM)"))))
+                throw  new IllegalArgumentException();
+            String[] lineList = lineString.replace(" ", ":").split(":"); // [01,15,19,PM]
+            int secAMorPM;
+            if (lineList[3].equals("AM")) {
+                int new12;
+                if (!lineList[0].equals("12")) {
+                    new12 = Integer.parseInt(lineList[0]);
+                } else new12 = 0;
+                secAMorPM = new12 * 60 * 60 + Integer.parseInt(lineList[1]) * 60 + Integer.parseInt(lineList[2]); // из AM в обычные сек
+
+            } else {
+                int newNumbers;
+                if (!lineList[0].equals("12")) {
+                    newNumbers = Integer.parseInt(lineList[0]) + 12;
+                } else newNumbers = 12;
+                secAMorPM = newNumbers * 60 * 60 + Integer.parseInt(lineList[1]) * 60 + Integer.parseInt(lineList[2]); // из PM в обычные сек
+            }
+            list.add(lineString);
+            list.add(Integer.toString(secAMorPM));
+            listPair.add(list);
+        }
+
+        FileWriter writer = new FileWriter(outputName);
+
+        for (int i = 0; i < listPair.size(); i++) {
+            String time = listPair.get(i).get(0);
+            int minSecI = Integer.parseInt(listPair.get(i).get(1));
+            int minIndex = i;
+            for (int j = i + 1; j < listPair.size(); j++) {
+                int minSecJ = Integer.parseInt(listPair.get(j).get(1));
+                if (minSecJ < minSecI) {
+                    minSecI = minSecJ;
+                    minIndex = j;
+                }
+            }
+            if (i != minIndex) {
+                String sec = listPair.get(i).get(1);
+                String str =  listPair.get(i).get(0);
+                listPair.get(i).set(1 , listPair.get(minIndex).get(1));
+                listPair.get(i).set(0 , listPair.get(minIndex).get(0));
+                listPair.get(minIndex).set(1 , sec);
+                listPair.get(minIndex).set(0 , str);
+            }
+        }
+
+        for (int i = 0; i < listPair.size(); i++) {
+            writer.write(listPair.get(i).get(0) + System.getProperty("line.separator"));
+        }
+        writer.close();
+        reader.close();
     }
 
     /**
