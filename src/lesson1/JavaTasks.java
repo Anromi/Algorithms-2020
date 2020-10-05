@@ -2,12 +2,13 @@ package lesson1;
 
 import kotlin.NotImplementedError;
 import kotlin.text.Regex;
-
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import static java.lang.Math.abs;
 
 @SuppressWarnings("unused")
 public class JavaTasks {
@@ -41,65 +42,61 @@ public class JavaTasks {
      *
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
+    // трудоёмкость: O(N * log N)
+    // ресурсоёмкость: O(N)
     static public void sortTimes(String inputName, String outputName) throws IOException {
-        ArrayList<String[]> listLine = new ArrayList<>(); // список из списков времени и (am/pm)
-        ArrayList<ArrayList<String>> listPair = new ArrayList<>(); // время и секунды
+        ArrayList<Integer> listTime = new ArrayList<>();
 
-        FileReader reader = new FileReader(inputName); // читаем файл
+        FileReader reader = new FileReader(inputName);
         Scanner scanner = new Scanner(reader);
 
         while (scanner.hasNextLine()) {
-            ArrayList<String> list = new ArrayList<>();
             String lineString = scanner.nextLine();
-            if (!lineString.matches(String.valueOf(new Regex("[0-2][0-9]:[0-5][0-9]:[0-5][0-9] (PM|AM)"))))
+            if (!lineString.matches(String.valueOf(new Regex("(0[1-9]|1[0-2]):[0-5][0-9]:[0-5][0-9] (PM|AM)"))))
                 throw  new IllegalArgumentException();
-            String[] lineList = lineString.replace(" ", ":").split(":"); // [01,15,19,PM]
+            String[] lineList = lineString.replace(" ", ":").split(":");
             int secAMorPM;
             if (lineList[3].equals("AM")) {
                 int new12;
                 if (!lineList[0].equals("12")) {
                     new12 = Integer.parseInt(lineList[0]);
                 } else new12 = 0;
-                secAMorPM = new12 * 60 * 60 + Integer.parseInt(lineList[1]) * 60 + Integer.parseInt(lineList[2]); // из AM в обычные сек
+                secAMorPM = new12 * 60 * 60 + Integer.parseInt(lineList[1]) * 60 + Integer.parseInt(lineList[2]);
 
             } else {
                 int newNumbers;
                 if (!lineList[0].equals("12")) {
                     newNumbers = Integer.parseInt(lineList[0]) + 12;
                 } else newNumbers = 12;
-                secAMorPM = newNumbers * 60 * 60 + Integer.parseInt(lineList[1]) * 60 + Integer.parseInt(lineList[2]); // из PM в обычные сек
+                secAMorPM = newNumbers * 60 * 60 + Integer.parseInt(lineList[1]) * 60 + Integer.parseInt(lineList[2]);
             }
-            list.add(lineString);
-            list.add(Integer.toString(secAMorPM));
-            listPair.add(list);
+            listTime.add(secAMorPM);
         }
+
+        int[] listNewTime = listTime.stream().mapToInt(i->i).toArray();
+        Sorts.quickSort(listNewTime);
 
         FileWriter writer = new FileWriter(outputName);
 
-        for (int i = 0; i < listPair.size(); i++) {
-            String time = listPair.get(i).get(0);
-            int minSecI = Integer.parseInt(listPair.get(i).get(1));
-            int minIndex = i;
-            for (int j = i + 1; j < listPair.size(); j++) {
-                int minSecJ = Integer.parseInt(listPair.get(j).get(1));
-                if (minSecJ < minSecI) {
-                    minSecI = minSecJ;
-                    minIndex = j;
-                }
+        for (int i = 0; i < listNewTime.length; i++) {
+            int element = listNewTime[i];
+            String format = String.format("%02d:%02d:%02d", 12, (element % 3600) / 60, element % 60);
+            if (element < 43200) {
+                if (element / 3600 == 0)
+                    writer.write(format + " AM" + System.getProperty("line.separator"));
+                else
+                    writer.write(String.format("%02d:%02d:%02d", element / 3600,
+                            (element % 3600) / 60, element % 60) + " AM" + System.getProperty("line.separator"));
             }
-            if (i != minIndex) {
-                String sec = listPair.get(i).get(1);
-                String str =  listPair.get(i).get(0);
-                listPair.get(i).set(1 , listPair.get(minIndex).get(1));
-                listPair.get(i).set(0 , listPair.get(minIndex).get(0));
-                listPair.get(minIndex).set(1 , sec);
-                listPair.get(minIndex).set(0 , str);
+            if (element >= 43200) {
+                if (element / 3600 == 12)
+                    writer.write(format + " PM" + System.getProperty("line.separator"));
+                else
+                    writer.write(String.format("%02d:%02d:%02d", (element / 3600) - 12,
+                            (element % 3600) / 60, element % 60) + " PM" + System.getProperty("line.separator"));
             }
         }
 
-        for (int i = 0; i < listPair.size(); i++) {
-            writer.write(listPair.get(i).get(0) + System.getProperty("line.separator"));
-        }
         writer.close();
         reader.close();
     }
@@ -164,8 +161,40 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
-    static public void sortTemperatures(String inputName, String outputName) {
-        throw new NotImplementedError();
+    // трудоёмкость: O(N)
+    // ресурсоёмкость: O(N)
+    static public void sortTemperatures(String inputName, String outputName) throws IOException {
+        List<Integer> list = new ArrayList<>();
+        FileReader reader = new FileReader(inputName);
+        Scanner scanner = new Scanner(reader);
+
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            String[] listIsLine = line.split("\\.");
+            int element;
+            if (listIsLine[0].contains("-"))
+                element = Integer.parseInt(listIsLine[0]) * 10 - Integer.parseInt(listIsLine[1]);
+            else
+                element = Integer.parseInt(listIsLine[0]) * 10 + Integer.parseInt(listIsLine[1]);
+            if (element >= -2730 && element <= 5000)
+                list.add(element);
+        }
+
+        int[] listSort = list.stream().mapToInt(i->i).toArray();
+        Sorts.quickSort(listSort);
+        FileWriter fileWriter = new FileWriter(outputName);
+
+        for (int i = 0; i < listSort.length; i++) {
+            String strLine;
+            if (listSort[i] < 0)
+                strLine = "-" + abs(listSort[i] / 10) + "." + ((listSort[i] % 10) * (-1));
+            else
+                strLine = (listSort[i] / 10) + "." + (listSort[i] % 10);
+            fileWriter.write(strLine + System.getProperty("line.separator"));
+        }
+
+        fileWriter.close();
+        reader.close();
     }
 
     /**
