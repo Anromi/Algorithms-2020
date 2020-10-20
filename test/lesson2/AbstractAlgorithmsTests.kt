@@ -2,6 +2,8 @@ package lesson2
 
 import java.io.BufferedWriter
 import java.io.File
+import java.lang.IllegalArgumentException
+import org.junit.jupiter.api.Assertions.assertThrows
 import java.util.*
 import kotlin.test.assertEquals
 
@@ -46,6 +48,7 @@ abstract class AbstractAlgorithmsTests {
         assertEquals(3 to 4, optimizeBuyAndSell("input/buysell_in1.txt"))
         assertEquals(8 to 12, optimizeBuyAndSell("input/buysell_in2.txt"))
         assertEquals(3 to 4, optimizeBuyAndSell("input/buysell_in3.txt"))
+        assertThrows(IllegalArgumentException::class.java) { optimizeBuyAndSell("input/buysell_in4.txt") }
         try {
             val expectedAnswer = generatePrices(1000)
             assertEquals(expectedAnswer, optimizeBuyAndSell("temp_prices.txt"))
@@ -124,6 +127,7 @@ abstract class AbstractAlgorithmsTests {
 
     fun calcPrimesNumber(calcPrimesNumber: (Int) -> Int) {
         assertEquals(0, calcPrimesNumber(-1))
+        assertEquals(0, calcPrimesNumber(0))
         assertEquals(0, calcPrimesNumber(1))
         assertEquals(1, calcPrimesNumber(2))
         assertEquals(2, calcPrimesNumber(4))

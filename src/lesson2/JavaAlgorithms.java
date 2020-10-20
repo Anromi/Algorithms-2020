@@ -3,6 +3,14 @@ package lesson2;
 import kotlin.NotImplementedError;
 import kotlin.Pair;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @SuppressWarnings("unused")
 public class JavaAlgorithms {
     /**
@@ -29,8 +37,36 @@ public class JavaAlgorithms {
      *
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-    static public Pair<Integer, Integer> optimizeBuyAndSell(String inputName) {
-        throw new NotImplementedError();
+    // трудоёмкость: O(N^2)
+    // ресурсоёмкость: O(N)
+    static public Pair<Integer, Integer> optimizeBuyAndSell(String inputName) throws IOException {
+        List<Integer> list = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(inputName)))) {
+            String readLine = reader.readLine();
+            if (!readLine.matches("^\\d+$")) throw new IllegalArgumentException();
+            while (readLine != null) {
+                list.add(Integer.parseInt(readLine));
+                readLine = reader.readLine();
+            }
+        }
+
+        int difference = 0;
+        int indexBuyNow = 0;
+        int indexSelLNow = 0;
+        for (int i=0; i < list.size(); i++) {
+            int numberI = list.get(i);
+            for (int j=i; j < list.size(); j++) {
+                int numberJ = list.get(j);
+                if (difference < numberJ - numberI && numberI < numberJ) {
+                    difference = numberJ - numberI;
+                    indexBuyNow = i;
+                    indexSelLNow = j;
+                }
+            }
+        }
+
+        return new Pair<>(indexBuyNow+1, indexSelLNow+1);
     }
 
     /**
@@ -97,9 +133,7 @@ public class JavaAlgorithms {
      * Если имеется несколько самых длинных общих подстрок одной длины,
      * вернуть ту из них, которая встречается раньше в строке first.
      */
-    static public String longestCommonSubstring(String firs, String second) {
-        throw new NotImplementedError();
-    }
+    static public String longestCommonSubstring(String firs, String second) { throw new NotImplementedError(); }
 
     /**
      * Число простых чисел в интервале
@@ -111,7 +145,21 @@ public class JavaAlgorithms {
      * Справка: простым считается число, которое делится нацело только на 1 и на себя.
      * Единица простым числом не считается.
      */
+    // трудоёмкость: O(N * log(log( N )))
+    // ресурсоёмкость: O(N)
     static public int calcPrimesNumber(int limit) {
-        throw new NotImplementedError();
+        int result = 0;
+        if (limit <= 1) return 0;
+        boolean[] trueOrFalse = new boolean[limit + 1];
+        Arrays.fill(trueOrFalse, true);
+        for (int i = 2; i <= limit; i++) {
+            if (trueOrFalse[i]) {
+                for (int j = 2 * i; j <= limit; j += i) {
+                    trueOrFalse[j] = false;
+                }
+                result++;
+            }
+        }
+        return result;
     }
 }

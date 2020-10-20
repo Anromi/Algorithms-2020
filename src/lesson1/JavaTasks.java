@@ -45,7 +45,7 @@ public class JavaTasks {
     // трудоёмкость: O(N * log N)
     // ресурсоёмкость: O(N)
     static public void sortTimes(String inputName, String outputName) throws IOException {
-        ArrayList<Integer> listTime = new ArrayList<>();
+        List<Integer> listTime = new ArrayList<>();
 
         FileReader reader = new FileReader(inputName);
         Scanner scanner = new Scanner(reader);
@@ -161,7 +161,7 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
-    // трудоёмкость: O(N)
+    // трудоёмкость: O(N * log N)
     // ресурсоёмкость: O(N)
     static public void sortTemperatures(String inputName, String outputName) throws IOException {
         List<Integer> list = new ArrayList<>();
