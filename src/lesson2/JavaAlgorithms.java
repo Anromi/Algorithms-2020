@@ -133,7 +133,30 @@ public class JavaAlgorithms {
      * Если имеется несколько самых длинных общих подстрок одной длины,
      * вернуть ту из них, которая встречается раньше в строке first.
      */
-    static public String longestCommonSubstring(String firs, String second) { throw new NotImplementedError(); }
+    // N - длина first строки
+    // M - длина second строки
+    // трудоёмкость: O(N * M)
+    // ресурсоёмкость: O(N * M)
+    static public String longestCommonSubstring(String first, String second) {
+        int[][] matrix = new int[first.length()][second.length()];
+        int maxLength = 0;
+        int maxI = 0;
+        for (int i = 0; i < first.length(); i++) {
+            for (int j = 0; j < second.length(); j++) {
+                if (first.charAt(i) == second.charAt(j)) {
+                    if (i != 0 && j != 0) matrix[i][j] = matrix[i - 1][j - 1] + 1;
+                    else matrix[i][j] = 1;
+                    if (matrix[i][j] > maxLength) {
+                        maxLength = matrix[i][j];
+                        maxI = i;
+                    }
+                }
+            }
+        }
+        String res = "";
+        if (maxLength != 0) res = first.substring(maxI - maxLength + 1, maxI + 1);
+        return res;
+    }
 
     /**
      * Число простых чисел в интервале
