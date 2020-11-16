@@ -109,6 +109,13 @@ abstract class AbstractTrieTest {
             }
             println("All clear!")
         }
+        // test
+        val set = setOf("trieNext1", "trieAndTrieNext2", "NexT3")
+        val create1 = create()
+        create1.addAll(set)
+        val iterator1 = create1.iterator()
+        while (iterator1.hasNext()) assertTrue(iterator1.next() in set)
+        assertEquals(3, create1.size)
     }
 
     protected fun doIteratorRemoveTest() {
@@ -170,6 +177,18 @@ abstract class AbstractTrieTest {
             }
             println("All clear!")
         }
+        // test
+        val set = setOf("trie", "trieAndTrie", "deleted")
+        val create1 = create()
+        create1.addAll(set)
+        val iterator1 = create1.iterator()
+        while (iterator1.hasNext()) {
+            if (iterator1.next() == "deleted") {
+                iterator1.remove()
+                break
+            }
+        }
+        assertEquals(2, create1.size)
     }
 
 }
