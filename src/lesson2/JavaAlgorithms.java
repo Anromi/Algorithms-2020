@@ -37,36 +37,8 @@ public class JavaAlgorithms {
      *
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-    // трудоёмкость: O(N^2)
-    // ресурсоёмкость: O(N)
-    static public Pair<Integer, Integer> optimizeBuyAndSell(String inputName) throws IOException {
-        List<Integer> list = new ArrayList<>();
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(inputName)))) {
-            String readLine = reader.readLine();
-            if (!readLine.matches("^\\d+$")) throw new IllegalArgumentException();
-            while (readLine != null) {
-                list.add(Integer.parseInt(readLine));
-                readLine = reader.readLine();
-            }
-        }
-
-        int difference = 0;
-        int indexBuyNow = 0;
-        int indexSelLNow = 0;
-        for (int i=0; i < list.size(); i++) {
-            int numberI = list.get(i);
-            for (int j=i; j < list.size(); j++) {
-                int numberJ = list.get(j);
-                if (difference < numberJ - numberI && numberI < numberJ) {
-                    difference = numberJ - numberI;
-                    indexBuyNow = i;
-                    indexSelLNow = j;
-                }
-            }
-        }
-
-        return new Pair<>(indexBuyNow+1, indexSelLNow+1);
+    static public Pair<Integer, Integer> optimizeBuyAndSell(String inputName) {
+        throw new NotImplementedError();
     }
 
     /**
