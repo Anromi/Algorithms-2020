@@ -188,7 +188,7 @@ public class JavaTasks {
         } catch (ArrayIndexOutOfBoundsException e) {
             throw (new IllegalArgumentException("Значение температуры вышло за диапазон допустимых значений."));
         } catch (NumberFormatException e) {
-            throw (new IllegalArgumentException("Значение имеет неравильный формат формат"));
+            throw (new IllegalArgumentException("Значение имеет неравильный формат формат."));
         }
     }
 

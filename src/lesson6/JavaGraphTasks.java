@@ -1,9 +1,10 @@
 package lesson6;
 
 import kotlin.NotImplementedError;
+import kotlin.Pair;
 
-import java.util.List;
-import java.util.Set;
+import java.lang.reflect.Array;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class JavaGraphTasks {
@@ -117,8 +118,32 @@ public class JavaGraphTasks {
      *
      * Ответ: A, E, J, K, D, C, H, G, B, F, I
      */
+    // Трудоёмкость: O( N! ) // N - кол. вершин графа
+    // Ресурсоёмкость: O( N! )
     public static Path longestSimplePath(Graph graph) {
-        throw new NotImplementedError();
+        Path res = new Path();
+        Set<Graph.Vertex> vertexSet = graph.getVertices(); // все вершины
+        if (vertexSet.isEmpty()) return res;
+        ArrayDeque<Path> paths = new ArrayDeque<>();
+        int maxLen = 0;
+        // все вершины добавляем в paths
+        for (Graph.Vertex v : vertexSet) { paths.add(new Path(v)); }
+        while (!paths.isEmpty()) {
+            Path path = paths.poll();
+            // если нашли длиннее, то записали
+            if (path.getLength() > maxLen) {
+                res = path;
+                maxLen = path.getLength();
+            }
+            List<Graph.Vertex> vertexList = path.getVertices();
+            Graph.Vertex vertex = vertexList.get(path.getLength());
+            Set<Graph.Vertex> set = graph.getNeighbors(vertex); // получили соседей последней вершины
+            // идем по соседям и добасляем новые пути
+            for (Graph.Vertex v : set) {
+                if (!path.contains(v)) paths.add(new Path(path, graph, v));
+            }
+        }
+        return res;
     }
 
 
