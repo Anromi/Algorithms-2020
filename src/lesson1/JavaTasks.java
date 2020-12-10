@@ -2,9 +2,8 @@ package lesson1;
 
 import kotlin.NotImplementedError;
 import kotlin.text.Regex;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -161,40 +160,36 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
-    // трудоёмкость: O(N * log N)
-    // ресурсоёмкость: O(N)
+    // трудоёмкость: O(N)
+    // ресурсоёмкость: O(1)
     static public void sortTemperatures(String inputName, String outputName) throws IOException {
-        List<Integer> list = new ArrayList<>();
-        FileReader reader = new FileReader(inputName);
-        Scanner scanner = new Scanner(reader);
-
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            String[] listIsLine = line.split("\\.");
-            int element;
-            if (listIsLine[0].contains("-"))
-                element = Integer.parseInt(listIsLine[0]) * 10 - Integer.parseInt(listIsLine[1]);
-            else
-                element = Integer.parseInt(listIsLine[0]) * 10 + Integer.parseInt(listIsLine[1]);
-            if (element >= -2730 && element <= 5000)
-                list.add(element);
+        int maxTemp = 7731;
+        int minTemp = 2730;
+        int[] ar = new int[maxTemp];
+        try {
+            FileReader fileReader = new FileReader(inputName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String str = bufferedReader.readLine();
+            while (str != null) {
+                int temp = (int) (Double.parseDouble(str) * 10 + minTemp);
+                str = bufferedReader.readLine();
+                ar[temp]++;
+            }
+            FileWriter fileWriter = new FileWriter(outputName);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            for (int i = 0; i < ar.length; i++) {
+                while (ar[i] > 0) {
+                    fileWriter.write((i - minTemp) / 10.0 + System.lineSeparator());
+                    ar[i]--;
+                }
+            }
+            fileReader.close();
+            fileWriter.close();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw (new IllegalArgumentException("Значение температуры вышло за диапазон допустимых значений."));
+        } catch (NumberFormatException e) {
+            throw (new IllegalArgumentException("Значение имеет неравильный формат формат"));
         }
-
-        int[] listSort = list.stream().mapToInt(i->i).toArray();
-        Sorts.quickSort(listSort);
-        FileWriter fileWriter = new FileWriter(outputName);
-
-        for (int i = 0; i < listSort.length; i++) {
-            String strLine;
-            if (listSort[i] < 0)
-                strLine = "-" + abs(listSort[i] / 10) + "." + ((listSort[i] % 10) * (-1));
-            else
-                strLine = (listSort[i] / 10) + "." + (listSort[i] % 10);
-            fileWriter.write(strLine + System.getProperty("line.separator"));
-        }
-
-        fileWriter.close();
-        reader.close();
     }
 
     /**
